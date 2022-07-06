@@ -20,9 +20,13 @@
   8. Type: ```LD_LIBRARY_PATH="$(pwd)" ./main```
       - Hit enter
   
-**You should see magenta & red/green messages begin to appear. 
-If the terminal window hangs, that means it's attempting to connect to the WebFB. 
-Once data starts spamming on the terminal, check for relevance by pressing any key. 
-If that doesn't stop the proccess, press CTRL+C. 
-Now you can scroll through the displayed data to check for relevance.**
+# Displayed Text
+**Once step 8 is complete, you should see colored text begin to appear in terminal.** 
+  - If the terminal window hangs, that means it's attempting to connect to the WebFB. 
+  - Magenta text is a status message (where the program is at)
+  - Green text is a success message
+  - Red text is an error message
+  - White text is either errors bult in to the BTI-Driver, or WebFB data
+  - Use ```CTRL+C``` to stop the program at any point
+
   
