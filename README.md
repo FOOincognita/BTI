@@ -1,8 +1,4 @@
-# Install gcc
-- Type: sudo apt update
-- Type: sudo apt install gcc
-
-# Download
+# Download Code
   - Click the down-arrow on the green "code" button
   - Download zip
   - Place .zip on Desktop
