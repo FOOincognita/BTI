@@ -12,16 +12,16 @@
   - Open PowerShell in Administrator mode
   - Type: ```sudo apt update```
   - Hit enter
-  - Type: sudo apt install gcc
+  - Type: ```sudo apt install gcc```
   - Hit enter
-  - Type: wsl 
+  - Type: ```wsl```
   - Hit enter
   - Navigate to the extracted folder within wsl
-  - Type: gcc -c main.c -o main.o
+  - Type: ```gcc -c main.c -o main.o```
   - Hit enter
-  - Type: gcc -o main main.o -lbtiCard -L.
+  - Type: ```gcc -o main main.o -lbtiCard -L.```
   - Hit enter
-  - Type: LD_LIBRARY_PATH="$(pwd)" ./main
+  - Type: ```LD_LIBRARY_PATH="$(pwd)" ./main```
   - Hit enter
   
 **You should see magenta & red/green messages begin to appear. 
