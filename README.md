@@ -7,9 +7,9 @@
 # Compilation
   1. Open PowerShell in Administrator mode
   2. Type: ```sudo apt update``` 
-    - Hit enter
+      - Hit enter
   3. Type: ```sudo apt install gcc```
-    - Hit enter
+      - Hit enter
   4. Type: ```wsl``` then hit enter
     - Hit enter
   5. Navigate to the extracted folder within wsl
