@@ -10,10 +10,7 @@
 
 # Compilation
   - Open PowerShell in Administrator mode
-  - Type: 
-  '''
-  sudo apt update
-  '''
+  - Type: ```sudo apt update```
   - Hit enter
   - Type: sudo apt install gcc
   - Hit enter
