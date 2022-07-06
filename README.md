@@ -1,5 +1,6 @@
 # Install gcc
 - Type: sudo apt update
+- Type: sudo apt install gcc
 
 # Download
   - Click the down-arrow on the green "code" button
@@ -9,6 +10,10 @@
 
 # Compilation
   - Open PowerShell in Administrator mode
+  - Type: '''sudo apt update'''
+  - Hit enter
+  - Type: sudo apt install gcc
+  - Hit enter
   - Type: wsl 
   - Hit enter
   - Navigate to the extracted folder within wsl
