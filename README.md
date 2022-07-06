@@ -11,14 +11,14 @@
   3. Type: ```sudo apt install gcc```
       - Hit enter
   4. Type: ```wsl``` then hit enter
-    - Hit enter
+      - Hit enter
   5. Navigate to the extracted folder within wsl
   6. Type: ```gcc -c main.c -o main.o```
-    - Hit enter
+      - Hit enter
   7. Type: ```gcc -o main main.o -lbtiCard -L.```
-    - Hit enter
+      - Hit enter
   8. Type: ```LD_LIBRARY_PATH="$(pwd)" ./main```
-    - Hit enter
+      - Hit enter
   
 **You should see magenta & red/green messages begin to appear. 
 If the terminal window hangs, that means it's attempting to connect to the WebFB. 
