@@ -30,6 +30,12 @@
 #include "btiutil.h"
 #include "btisocket.h"
 
+#define C "\033[1;36m"	// Cyan
+#define R "\033[1;31m" 	// Red
+#define G "\033[1;32m" 	// Green
+#define M "\033[1;35m"	// Magenta 
+#define RST "\033[0m" 	// Reset
+
 void init_console(struct termios *oldattr);
 void restore_console(struct termios oldattr);
 int getch(void);
@@ -47,31 +53,40 @@ int main(int argc, char *argv[])
 	//
 	//	Create a socket
 	//
+	printf("\n%s[STATUS]: CREATING SOCKET%s\n", M, RST);
 
 	if (!SocketCreate())
 	{
-		printf("Unable to create socket... Exiting (errno=%d)",errno);
+		printf("%s[ERROR]: Unable to create socket... Exiting (errno=%d)%s", R, errno, RST);
 		exit(1);
+	} else {
+		printf("\n%s[SUCCESS]: SOCKET CREATED%s\n", G, RST);
 	}
 
 	//
 	//	Connect to BTIAIDSvc socket
 	//
 
+	printf("\n%s[STATUS]: ATTEMPTING TO CONNECT%s\n", M, RST);
+
 	if (!SocketConnect())
 	{
-		printf("Unable to connect to socket... Exiting\n");
+		printf("%s[ERROR]: Unable to connect to socket... Exiting%s\n", R, RST);
 		exit(1);
+	} else {
+		printf("\n%s[SUCCESS]: CONNECTION ESTABLISHED%s\n", G, RST);
 	}
 
 	//
 	//	Setup the socket signal polling
 	//
-
+	printf("\n%s[STATUS]: INITIALIZING SIGNAL POLLING%s\n", M, RST);
 	if (!SocketSetupPoll())
 	{
-		printf("Unable to setup signal poll... Exiting (errno=%d)",errno);
+		printf("%s[ERROR]: Unable to setup signal poll... Exiting (errno=%d)%s", R, errno, RST);
 		exit(1);
+	} else {
+		printf("\n%s[SUCCESS]: SIGNAL POLL ACTIVE%s\n", G, RST);
 	}
 
 	//
@@ -80,12 +95,12 @@ int main(int argc, char *argv[])
 
 	init_console(&oldattr);
 
-	printf("\n\nPress any key to stop....\n\n");
+	printf("\n%s[STATUS]: ENTERING MAIN LOOP%s\n", M, RST);
+	printf("\n\n%sPRESS ANY KEY TO STOP%s\n\n", C, RST);
 
 	//
 	//	Start the main loop
 	//
-
 	while (1)
 	{
 		ch = getch();
@@ -98,7 +113,7 @@ int main(int argc, char *argv[])
 		switch (SocketPoll())
 		{
 			default:
-				printf("Error in SocketPoll (errno=%d)",errno);
+				printf("\n%s[ERROR]: SocketPoll (errno=%d)%s\n", R, errno, RST);
 				break;
 			case 0: //Timeout
 				break;
