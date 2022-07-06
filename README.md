@@ -6,7 +6,7 @@
 
 # Compilation
   1. Open PowerShell in Administrator mode
-  2. Type: ```wsl``` then hit enter
+  2. Type: ```wsl``` 
       - Hit enter
   3. Type: ```sudo apt update``` 
       - Hit enter
