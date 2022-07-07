@@ -132,16 +132,14 @@ ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype)
 }
 
 
-ERRVAL BTIUTIL_SeqFindNext(LPUINT16 *pRecord,LPUINT16 seqtype,LPSEQFINDINFO sfinfo)
-{
+ERRVAL BTIUTIL_SeqFindNext(LPUINT16 *pRecord,LPUINT16 seqtype,LPSEQFINDINFO sfinfo) {
 	ERRVAL errval;
 	LPUINT16 pSeqBuf;
 
 	if (!sfinfo) return(ERR_SEQFINDINFO);
 
-	for (pSeqBuf = sfinfo->pRecNext; pSeqBuf < sfinfo->pRecLast;)
-	{
-		//Check for a know record type
+	for (pSeqBuf = sfinfo->pRecNext; pSeqBuf < sfinfo->pRecLast;) {
+		// Check for a known record type
 		errval = BTIUTIL_SeqFindCheckValidType(pSeqBuf[0]);
 		if (errval) return(errval);
 
