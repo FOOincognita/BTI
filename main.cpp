@@ -155,7 +155,7 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 				} else if (laloStr == "c9") {
 					storage.latLong = (LaLo)1;
 				} else {
-					printf("%s[ERROR]: INVALID ARG\nlatLon: %s\n%s", R, laloStr, RST);
+					printf("%s[ERROR]: INVALID ARG\nlatLon: %s\n%s", R, laloStr.c_str(), RST);
 				}
 				
 				//! Convert hex to 32-bit word
@@ -207,7 +207,7 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 
 				break;
 
-				*/
+				
 
 			case SEQTYPE_717SF:
 				pRec717 = (LPSEQRECORD717SF)pRec;
@@ -234,6 +234,7 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 				BTICard_IRIGFieldGetMicrosec(pRec717->timestamph,pRec717->timestamp));
 
 				break;
+				*/
 		}
 	}
 
