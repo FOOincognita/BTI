@@ -8,6 +8,10 @@
 #include <stdexcept>
 #include <bitset>
 #include <iomanip>
+#include <cstdint>
+#include <stdio.h>
+#include <stdint.h>
+#include <inttypes.h>
 
 auto CONV = 0.00017166154;
 
@@ -17,7 +21,7 @@ enum class Parity {POS, NEG};
 struct data {
     LaLo latLong; 
     std::string bin;
-    double b1428;
+    int b1428;
     Parity par29; 
     Parity par32;
 };
