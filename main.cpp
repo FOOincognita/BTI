@@ -171,11 +171,14 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 					//! convert 32-bit word to dec
 					//? string read reverse?
 
-					bit1428Str = storage.bin.substr(4, 19); //? Change based on order
-					printf("\n%sBITS 14-28: %s %s \n", C, bit1428Str, RST);
+
+					bit1428Str = storage.bin.substr(4, 15); //? Change based on order
+					printf("\n%sBITS 14-28: %s %s\n", C, bit1428Str.c_str(), RST);
+
 					//! Convert 14-28 to decimal & multiply
 					storage.b1428 = std::stod(bit1428Str)*CONV;
 					printf("\n%sBITS 14-28 [DECIMAL]: %i %s \n", C, storage.b1428, RST);
+					
 					//! Check for Parity
 					//? Change based on order
 					storage.par29 = (Parity)(storage.bin.at(3) - '0'); //* ASCII magic
@@ -278,4 +281,3 @@ int getch(void)
 	ch = getchar();
 	return ch;
 }
-
