@@ -13,7 +13,7 @@
   4. Type: ```sudo apt install gcc```
       - Hit enter
   5. Navigate to the extracted folder within wsl
-  6. Type: ```gcc -c main.c -o main.o```
+  6. Type: ```gcc -c main.cpp -o main.o -lstdc++```
       - Hit enter
   7. Type: ```gcc -o main main.o -lbtiCard -L.```
       - Hit enter
