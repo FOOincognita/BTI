@@ -124,12 +124,14 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 	LPSEQRECORD429   pRec429;
 
 	std::stringstream ss;
+	uint32_t hexa;
 	std::string hexStr;
 	std::string bit1428Str;
 	std::string laloStr;
 	data storage;
 	bool valid = true;
 	unsigned n;
+	std::string LAT("c8"), LON("c9");
 
 	errval = BTICard_SeqFindInit(buf, wordcount, &sfinfo);
 
@@ -146,14 +148,13 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 				pRec429 = (LPSEQRECORD429)pRec;
 	
 				ss << std::hex << ntohl(pRec429->data);
-				ss >> std::hex >> hexStr; //! raw hex
-				ss.clear();
-
+				hexStr = ss.str(); //! raw hex
+				
 				//! Check if lat or lon
 				laloStr = hexStr.substr(hexStr.length()-2);
-				if(laloStr == "c8") {
+				if(laloStr == LAT) {
 					storage.latLong = (LaLo)0;
-				} else if (laloStr == "c9") {
+				} else if (laloStr == LON) {
 					storage.latLong = (LaLo)1;
 				} else {
 					valid = false;
@@ -161,7 +162,7 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 				
 				if (valid) {
 					printf("\n%sEXPECTED HEX: 0x%04x %s\n", G, ntohl(pRec429->data), RST);	
-					printf("%sACTUAL: %s %s\n", C, hexStr, RST);
+					printf("%sACTUAL: 0x%s %s\n", C, hexStr.c_str(), RST);
 					//! Convert hex to 32-bit word
 					ss >> n;
 					std::bitset<32> b(n); 
@@ -174,7 +175,7 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 					printf("\n%sBITS 14-28: %s %s \n", C, bit1428Str, RST);
 					//! Convert 14-28 to decimal & multiply
 					storage.b1428 = std::stod(bit1428Str)*CONV;
-					printf("\n%sBITS 14-28 [DECIMAL]: %f %s \n", C, storage.b1428, RST);
+					printf("\n%sBITS 14-28 [DECIMAL]: %i %s \n", C, storage.b1428, RST);
 					//! Check for Parity
 					//? Change based on order
 					storage.par29 = (Parity)(storage.bin.at(3) - '0'); //* ASCII magic
