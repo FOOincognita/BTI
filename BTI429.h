@@ -334,9 +334,7 @@ BTI429API SCHNDX BTI429_SchedRestart(INT channum,HCORE handleval);
 BTI429API SCHNDX BTI429_SchedReturn(INT channum,HCORE handleval);
 
 /**
-*
 *  Internal functions used by the BTI429 Driver.
-*
 **/
 
 BTI429API VOID BTI429_BCDGetVal(LPSTR buf,UINT32 msg,UINT16 sigdig,LPCSTR resolstr);

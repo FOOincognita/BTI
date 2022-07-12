@@ -30,6 +30,8 @@
 #include "btiutil.h"
 #include "btisocket.h"
 
+#include "dat.h"
+
 #define C "\033[1;36m"	// Cyan
 #define R "\033[1;31m" 	// Red
 #define G "\033[1;32m" 	// Green
@@ -121,6 +123,13 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 	LPSEQRECORD717SF pRec717;
 	LPSEQRECORD429   pRec429;
 
+	std::stringstream ss;
+	std::string hexStr;
+	std::string bit1428Str;
+	std::string laloStr;
+	data storage;
+	unsigned n;
+
 	errval = BTICard_SeqFindInit(buf, wordcount, &sfinfo);
 
 	if (errval) {
@@ -135,26 +144,70 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 			case SEQTYPE_429:	
 				pRec429 = (LPSEQRECORD429)pRec;
 
+				ss << std::hex << ntohl(pRec429->data);
+				ss >> std::hex >> hexStr; //! raw hex
+				ss.clear();
+
+				//! Check if lat or lon
+				laloStr = hexStr.substr(hexStr.length()-2);
+				if(laloStr == "c8") {
+					storage.latLong = (LaLo)0;
+				} else if (laloStr == "c9") {
+					storage.latLong = (LaLo)1;
+				} else {
+					printf("%s[ERROR]: INVALID ARG\nlatLon: %s\n%s", R, laloStr, RST);
+				}
+				
+				//! Convert hex to 32-bit word
+				ss >> n;
+				std::bitset<32> b(n); 
+				storage.bin = b.to_string();
+
+				//! convert 32-bit word to dec
+				//? string read reverse?
+
+				bit1428Str = storage.bin.substr(4, 19); //? Change based on order
+
+				//! Convert 14-28 to decimal & multiply
+				storage.b1428 = std::stod(bit1428Str)*CONV;
+				
+				//! Check for Parity
+				//? Change based on order
+				storage.par29 = (Parity)(storage.bin.at(3) - '0'); //* ASCII magic
+				storage.par32 = (Parity)(storage.bin.at(0) - '0');
+
+				std::cout << std::endl << M << "[BITS 14-28]: " << std::fixed 
+							<< std::showpoint << std::setprecision(6) 
+							<< storage.b1428 << RST << std::endl;
+
+				/*
                 //Convert the timestamp from binary to BCD
 				BTICard_IRIGTimeBinToBCD(&pRec429->timestamph,
                                          &pRec429->timestamp,
                                          ntohl(pRec429->timestamph),
                                          ntohl(pRec429->timestamp));
 
+				
         		//Output record info
 				printf("\nCh:%-2d  Data:0x%04x (Hex) ",										// Output Format
 					(ntohs(pRec429->activity) & MSGACT429_CHMASK) >> MSGACT429_CHSHIFT, 	// Channel			
 					ntohl(pRec429->data));													// Data
+				
+
+
+
 
                 //Output record timestamp
 				printf("  TimeStamp:%02u:%02u %02u.%03u.%03u",
-				BTICard_IRIGFieldGetHours(pRec429->timestamph,pRec429->timestamp),
-				BTICard_IRIGFieldGetMin(pRec429->timestamph,pRec429->timestamp),
-				BTICard_IRIGFieldGetSec(pRec429->timestamph,pRec429->timestamp),
-				BTICard_IRIGFieldGetMillisec(pRec429->timestamph,pRec429->timestamp),
-				BTICard_IRIGFieldGetMicrosec(pRec429->timestamph,pRec429->timestamp));
+				BTICard_IRIGFieldGetHours(pRec429->timestamph, pRec429->timestamp),
+				BTICard_IRIGFieldGetMin(pRec429->timestamph, pRec429->timestamp),
+				BTICard_IRIGFieldGetSec(pRec429->timestamph, pRec429->timestamp),
+				BTICard_IRIGFieldGetMillisec(pRec429->timestamph, pRec429->timestamp),
+				BTICard_IRIGFieldGetMicrosec(pRec429->timestamph, pRec429->timestamp));
 
 				break;
+
+				*/
 
 			case SEQTYPE_717SF:
 				pRec717 = (LPSEQRECORD717SF)pRec;
