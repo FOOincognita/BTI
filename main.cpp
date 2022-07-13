@@ -226,3 +226,4 @@ int getch(void)
 	ch = getchar();
 	return ch;
 }
+

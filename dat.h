@@ -14,8 +14,6 @@
 #include <inttypes.h>
 #include <unordered_map>
 
-#define CONV 0.00017166154
-
 enum class LaLo {LATITUDE, LONGITUDE};
 enum class Parity {POS, NEG};
 

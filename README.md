@@ -10,12 +10,12 @@
       - Hit enter
   3. Type: ```sudo apt update``` 
       - Hit enter
-  4. Type: ```sudo apt install gcc```
+  4. Type: ```sudo apt install g++```
       - Hit enter
   5. Navigate to the extracted folder within wsl
-  6. Type: ```gcc -c main.cpp -o main.o -lstdc++```
+  6. Type: ```g++ -c main.cpp -o main.o```
       - Hit enter
-  7. Type: ```gcc -o main main.o -lbtiCard -L.```
+  7. Type: ```g++ -o main main.o -lbtiCard -L.```
       - Hit enter
   8. Type: ```LD_LIBRARY_PATH="$(pwd)" ./main```
       - Hit enter
