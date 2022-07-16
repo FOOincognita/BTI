@@ -1,23 +1,3 @@
-/**
-*
-*  BTI Structures and Utility Functions  (03/01/2015)
-*  Copyright (c) 2016
-*  Ballard Technology, Inc.
-*  www.ballardtech.com
-*  support@ballardtech.com
-*  ALL RIGHTS RESERVED
-*
-*  NAME:  btiutil.h
-*
-**/
-
-/**
-*
-*  This file provides structures and utility functions
-*  used when reading the btiaidsvc data stream.
-*
-**/
-
 #ifndef _BTIUTIL_H
 #define _BTIUTIL_H
 
@@ -28,9 +8,7 @@
 #include <stdint.h>
 #include <strings.h>
 
-//
 //	Definitions
-//
 
 #define MAX_WPS 8192
 
@@ -46,12 +24,9 @@
 #define BOOL int
 #endif
 
-//
 //	Structures and Enumerations
-//
 
-typedef struct datafile_t
-{
+typedef struct datafile_t {
 	uint16_t streamactivity;		//see ACTSTREAM_ below
 	uint16_t channel;
 	uint16_t wps;
@@ -61,7 +36,7 @@ typedef struct datafile_t
 	uint16_t sfdata[4][MAX_WPS];	//allocate max.
 } datafile_t;
 
-typedef struct chan717Info_t{
+typedef struct chan717Info_t {
 		int        valid;
 		int        channel;
 		int        wps;
@@ -71,7 +46,7 @@ typedef struct chan717Info_t{
 		uint32_t   errorcnt;		//Total errors for this channel
 } chan717Info_t;
 
-typedef struct chan429Info_t{
+typedef struct chan429Info_t {
 	int        valid;
 	int        channel;
 	int        btx;
@@ -83,7 +58,7 @@ typedef struct chan429Info_t{
 	uint32_t   lastupdate;			//Time of last update
 } chan429Info_t;
 
-typedef struct{
+typedef struct {
 	uint16_t type;					//
 	uint16_t count;					//
 	uint32_t timestamp;				//
@@ -101,8 +76,7 @@ typedef struct{
 typedef SEQRECORD717SF * LPSEQRECORD717SF;
 #endif
 
-enum
-{
+enum {
 	ACTSTREAM_SERVERFAULT=0x1,
 	ACTSTREAM_SUBF1VALID=0x10,
 	ACTSTREAM_SUBF2VALID=0x20,
@@ -114,8 +88,7 @@ enum
 // BTIDriver Sequential Record Methods
 ////////////////////////////////////////////////////////////
 
-ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype)
-{
+ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype) {
 	seqtype &= SEQTYPE_MASK;
 
 //	if (seqtype == SEQTYPE_1553) return(ERR_NONE);
@@ -130,7 +103,6 @@ ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype)
 
 	return(ERR_SEQTYPE);
 }
-
 
 ERRVAL BTIUTIL_SeqFindNext(LPUINT16 *pRecord,LPUINT16 seqtype,LPSEQFINDINFO sfinfo) {
 	ERRVAL errval;
@@ -151,7 +123,6 @@ ERRVAL BTIUTIL_SeqFindNext(LPUINT16 *pRecord,LPUINT16 seqtype,LPSEQFINDINFO sfin
 
 		return(ERR_NONE);
 	}
-
 	return(ERR_SEQNEXT);
 }
 

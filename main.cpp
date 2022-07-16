@@ -1,26 +1,3 @@
-/**
-*
-*  Data display example  (06/15/2022)
-*  Copyright (c) 2022
-*  Astronics AES, Inc.
-#  Ballard Technology
-*  www.ballardtech.com
-*  Ballard.Support@astronics.com
-*  ALL RIGHTS RESERVED
-*
-*  NAME:   examp3.c
-*
-**/
-
-/**
-*
-*  This program opens a socket to the AID service on the
-*  webFB or webCS. It then prints records to the console as they
-*  are parsed.
-*
-*
-**/
-
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
@@ -41,7 +18,6 @@
 void init_console(struct termios *oldattr);
 void restore_console(struct termios oldattr);
 int getch(void);
-
 int ParsePackets(LPUINT16 buf, uint32_t wordcount);
 
 int main(int argc, char *argv[]) {
@@ -196,8 +172,7 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 }
 
 //	Save console settings in oldattr and setup console with new settings
-void init_console(struct termios *oldattr)
-{
+void init_console(struct termios *oldattr) {
 	struct termios newattr;
 
 	tcgetattr(0,oldattr);
@@ -214,14 +189,12 @@ void init_console(struct termios *oldattr)
 }
 
 //	Restore console setting contained in oldattr
-void restore_console(struct termios oldattr)
-{
+void restore_console(struct termios oldattr) {
 	tcsetattr( STDIN_FILENO, TCSANOW, &oldattr);
 }
 
 //	Reads from key-press, doesn't echo
-int getch(void)
-{
+int getch(void) {
 	int ch;
 	ch = getchar();
 	return ch;
