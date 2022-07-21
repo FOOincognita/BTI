@@ -7,7 +7,7 @@
 #include "btiutil.h"
 #include "btisocket.h"
 
-#include "dat.h"
+#include "global.h"
 
 #define C "\033[1;36m"	// Cyan
 #define R "\033[1;31m" 	// Red

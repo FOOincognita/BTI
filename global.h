@@ -1,5 +1,5 @@
-#ifndef _DAT_H
-#define _DAT_H
+#ifndef _GLOBAL_H
+#define _GLOBAL_H
 
 #include <iostream>
 #include <string>
