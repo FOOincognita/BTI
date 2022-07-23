@@ -2,7 +2,6 @@
 #define _GLOBAL_H
 
 #include "BTICard.h"
-#include "BTI717.h"
 #include "BTI429.h"
 
 #include <iostream>
@@ -36,41 +35,38 @@
 #include <sys/stat.h>
 #include <cstring>
 
-
-
-
-
 //*	Definitions
-#define MAX_WPS 8192
-#define C "\033[1;36m"	// Cyan
-#define R "\033[1;31m" 	// Red
-#define G "\033[1;32m" 	// Green
-#define M "\033[1;35m"	// Magenta 
-#define RST "\033[0m" 	// Reset
-#define SOCK_PORT		10001
-#define SOCK_IP	"172.31.1.1"
-#define MAXPACKETSIZE   16384
-#define TIMEOUT		    5
+#define SOCK_IP	    "172.31.1.1"
+#define SOCK_PORT   10001
+#define MAXPKT      16384
+#define MAX_WPS     8192
+#define TIMEOUT		5
+
+#define C           "\033[1;36m"	// Cyan
+#define R           "\033[1;31m" 	// Red
+#define G           "\033[1;32m" 	// Green
+#define M           "\033[1;35m"	// Magenta 
+#define RST         "\033[0m" 	    // Reset
 
 //* Structures and Enumerations
 typedef struct datafile_t {
-	uint16_t streamactivity;		//see ACTSTREAM_ below
+	uint16_t streamactivity;		// see ACTSTREAM_ below
 	uint16_t channel;
 	uint16_t wps;
 	uint16_t updatedSubfrm;
-	uint32_t timestamp;				//last time file was updated
-	uint32_t timestamph;			//last time file was updated
-	uint16_t sfdata[4][MAX_WPS];	//allocate max.
+	uint32_t timestamp;				// last time file was updated
+	uint32_t timestamph;			// last time file was updated
+	uint16_t sfdata[4][MAX_WPS];	// allocate max.
 } datafile_t;
 
 typedef struct chan717Info_t {
 		int        valid;
 		int        channel;
 		int        wps;
-		uint32_t   lastupdate;		//Time of last update
-		datafile_t datafile;		//Most recent SF data info
-		uint32_t   recordcnt;		//Records for this channel
-		uint32_t   errorcnt;		//Total errors for this channel
+		uint32_t   lastupdate;		// Time of last update
+		datafile_t datafile;		// Most recent SF data info
+		uint32_t   recordcnt;		// Records for this channel
+		uint32_t   errorcnt;		// Total errors for this channel
 } chan717Info_t;
 
 typedef struct chan429Info_t {
@@ -79,10 +75,10 @@ typedef struct chan429Info_t {
 	int        btx;
 	uint32_t   timestamp;			//
 	uint32_t   timestamph;			//
-	uint32_t   recordcnt;			//Records for this channel
-	uint32_t   errorcnt;			//Total errors for this channel
+	uint32_t   recordcnt;			// Records for this channel
+	uint32_t   errorcnt;			// Total errors for this channel
 	uint32_t   msg;
-	uint32_t   lastupdate;			//Time of last update
+	uint32_t   lastupdate;			// Time of last update
 } chan429Info_t;
 
 typedef struct {
@@ -91,13 +87,13 @@ typedef struct {
 	uint32_t timestamp;				//
 	uint32_t timestamph;			//
 	uint16_t activity;				//
-	uint16_t subframe;				//Valid in all versions
-	uint16_t resv;					//(future: superframe) Valid in all versions
+	uint16_t subframe;				// Valid in all versions
+	uint16_t resv;					// (future: superframe) Valid in all versions
 	uint16_t datacount;				//
-	uint16_t data[8192];			//Variable length (don't exceed data[datacount-1])
+	uint16_t data[8192];			// Variable length (don't exceed data[datacount-1])
 } SEQRECORD717SF;
 
-#define SEQTYPE_717SF 0x0009		//Sequential record type is ARINC 717 Subframe
+#define SEQTYPE_717SF 0x0009		// Sequential record type is ARINC 717 Subframe
 
 #ifndef LPSEQRECORD717SF
 typedef SEQRECORD717SF * LPSEQRECORD717SF;
@@ -111,23 +107,9 @@ enum {
 	ACTSTREAM_SUBF4VALID=0x80,
 };
 
-////////////////////////////////////////////////////////////
-// BTIDriver Sequential Record Methods
-////////////////////////////////////////////////////////////
-
 ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype) {
 	seqtype &= SEQTYPE_MASK;
-
-//	if (seqtype == SEQTYPE_1553) return(ERR_NONE);
 	if (seqtype == SEQTYPE_429)  return(ERR_NONE);
-//	if (seqtype == SEQTYPE_717)  return(ERR_NONE);
-	if (seqtype == SEQTYPE_717SF)return(ERR_NONE);
-//	if (seqtype == SEQTYPE_708)  return(ERR_NONE);
-//	if (seqtype == SEQTYPE_CSDB) return(ERR_NONE);
-//	if (seqtype == SEQTYPE_DIO)  return(ERR_NONE);
-//	if (seqtype == SEQTYPE_EBR)  return(ERR_NONE);
-//	if (seqtype == SEQTYPE_USER) return(ERR_NONE);
-
 	return(ERR_SEQTYPE);
 }
 
@@ -172,13 +154,6 @@ void init_console(struct termios *oldattr) {
 //* Restore console setting contained in oldattr
 void restore_console(struct termios oldattr) {
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
-}
-
-//* Reads from key-press, doesn't echo
-int getch(void) {
-	int ch(0);
-	ch = getchar();
-	return ch;
 }
 
 //! Data Translation

@@ -2,12 +2,12 @@
 
 //* Constructor
 WebFB::WebFB() 
-    : IPAddr(SOCK_IP) , Port(SOCK_PORT), sockFD(-1), sockPKT(0), sockError(0) {
+    : sockIP(SOCK_IP) , sockPort(SOCK_PORT), sockFD(-1), sockPKT(0), sockError(0) {
 }
 
 //* Constructor
 WebFB::WebFB(std::string _IP, uint16_t _Port) 
-    : IPAddr(_IP) , Port(_Port), sockFD(-1), sockPKT(0), sockError(0) {
+    : sockIP(_IP) , sockPort(_Port), sockFD(-1), sockPKT(0), sockError(0) {
 }
 
 //* Destructor
@@ -36,8 +36,8 @@ int WebFB::sockConnect() {
     //bzero(&addr, sizeof(addr));
 
 	addr.sin_family      = AF_INET;
-	addr.sin_port        = htons(this->Port);
-	addr.sin_addr.s_addr = inet_addr((this->IPAddr.c_str()));
+	addr.sin_port        = htons(this->sockPort);
+	addr.sin_addr.s_addr = inet_addr((this->sockIP.c_str()));
 
 	result = connect(this->sockFD, (struct sockaddr*)&addr, sizeof(addr));
 	if (result < 0) {

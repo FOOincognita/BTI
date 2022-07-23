@@ -3,7 +3,7 @@
 
 int main(int argc, char *argv[]) {
 	int ch(0), result(0);
-	UINT16 buf[MAXPACKETSIZE];
+	uint16_t buf[MAXPKT];
 	struct termios oldattr;
     WebFB *WFB(new WebFB); //!! ADD IP/PORT GRABBER FROM MOBILE
 
@@ -16,7 +16,7 @@ int main(int argc, char *argv[]) {
 
 	} else {
 		printf("\n%s[SUCCESS]: SOCKET CREATED%s\n", G, RST);
-
+        
 	}
 
 	//	Connect to BTIAIDSvc socket
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
 			case 0: break; //Timeout
 			case 2: break; // No Data
 			case 1: //Data Ready
-				result = WFB->rdSockData(buf, MAXPACKETSIZE);
+				result = WFB->rdSockData(buf, MAXPKT);
 				if (result < 0) {
 					printf("SocketDataRd returned %i",result);
 				} else if (result > 0) {

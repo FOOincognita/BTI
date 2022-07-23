@@ -7,11 +7,11 @@ class WebFB {
     uint32_t	    sockPKT;
     uint32_t	    sockError;
     sigset_t        sockSigMask;
-    std::string     IPAddr;
-    uint16_t  Port;
+    uint16_t        sockPort;
+    std::string     sockIP;
 public:
     WebFB();
-    WebFB(std::string IPAddr, uint16_t Port);
+    WebFB(std::string IP, uint16_t Port);
     ~WebFB();
 
     int mkSock();
