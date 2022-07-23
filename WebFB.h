@@ -7,13 +7,12 @@
 #define FAIL(x) std::cout << std::endl << R << "[ERROR]: " << x << RST << std::endl; exit(1) 
 #define PASS(x) std::cout << std::endl << G << "[SUCCESS]: " << x << RST << std::endl   
 
-
 typedef std::string ipaddr_t;
 class WebFB {
 public:
     manage_t data;
 private:
-    int			sockFD;
+    size_t		sockFD;
     uint32_t	sockPKT;
     uint32_t	sockError;
     uint16_t    sockPort;
@@ -32,15 +31,17 @@ public:
     int ParsePKTS(LPUINT16 buf, uint32_t wordcount);
 };
 
-//* Constructor
+//* Default Constructor
 WebFB::WebFB() 
     : sockIP(SOCK_IP) , sockPort(SOCK_PORT), sockFD(-1), sockPKT(0), sockError(0) {
 }
 
-//* Constructor
-WebFB::WebFB(ipaddr_t _IP, uint16_t _Port) 
-    : sockIP(_IP) , sockPort(_Port), sockFD(-1), sockPKT(0), sockError(0) {
-        
+//* Paramaterized Constructor
+// @param IP: IP Address
+// @param Port: IP Address Port
+WebFB::WebFB(ipaddr_t IP, uint16_t Port) 
+    : sockIP(IP) , sockPort(Port), sockFD(-1), sockPKT(0), sockError(0) {
+
     STAT("CREATING SOCKET");
 	if (!this->mkSock()) { 
         FAIL("FAILED TO CREATE SOCKET...EXITING");
@@ -105,8 +106,10 @@ int WebFB::sockConnect() {
 
 //* Reads Data From Socket
 //?  -1 = Error
-//?   0 = Pulse Packet
+//?  0 = Pulse Packet
 //?  >0 = Data Packet
+//   @param pbuf: Data Buffer
+//   @param bufsize: Size of Buffer in Bytes
 int WebFB::rdSockData(uint16_t *pbuf, uint32_t bufsize) {
 	int result(0);
 	uint32_t wordcount(0);
@@ -234,7 +237,7 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 	}
 
 	//	Walk the record stream using our modified find-next method
-	while(!BTIUTIL_SeqFindNext(&pRec,&seqtype,&sfinfo)) {
+	while(!BTIUTIL_SeqFindNext(&pRec, &seqtype, &sfinfo)) {
 		switch(seqtype) {
 			default: break;
 			case SEQTYPE_429:	
