@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <errno.h>
-#define __USE_GNU
+//! #define __USE_GNU
 #include <sys/poll.h>
 #include <sys/eventfd.h>
 #include <sys/socket.h>
@@ -49,6 +49,11 @@
 #define RST         "\033[0m" 	    // Reset
 
 //* Structures and Enumerations
+typedef struct manage_t {
+    struct termios  oldattr;
+    uint16_t        buf[MAXPKT];
+} manage_t;
+
 typedef struct datafile_t {
 	uint16_t streamactivity;		// see ACTSTREAM_ below
 	uint16_t channel;
