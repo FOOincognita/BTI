@@ -238,7 +238,7 @@ void restore_console(struct termios oldattr) {
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
 }
 
-//! Conversion functions
+//! Conversion functions [GTEST STATES THESE ARE BROKEN!!!!]
 /// Converts hex to decimal
 int htod(std::string h) {
     int x(0);   
