@@ -3,11 +3,6 @@
 
 #include "global.h"
 
-#define STAT(x) std::cout << std::endl << M << "[STATUS]: " << x << RST << std::endl
-#define FAIL(x) std::cout << std::endl << R << "[ERROR]: " << x << RST << std::endl; exit(1) 
-#define PASS(x) std::cout << std::endl << G << "[SUCCESS]: " << x << RST << std::endl   
-
-typedef std::string ipaddr_t;
 class WebFB {
 public:
     manage_t data;
@@ -135,9 +130,7 @@ int WebFB::rdSockData(uint16_t *pbuf, uint32_t bufsize) {
 	wordcount = ntohl(wordcount);
 
 	//? Pulse packet
-	if (!wordcount) {
-		return 0;
-	}
+	if (!wordcount) { return 0; }
 
 	//? Error: Unexpected packet
 	if (wordcount > bufsize) {
@@ -159,7 +152,7 @@ int WebFB::rdSockData(uint16_t *pbuf, uint32_t bufsize) {
 		return -1;
 	} 
 
-	this->sockFD++;
+	this->sockPKT++;
 
 	return wordcount;
 }
@@ -186,7 +179,7 @@ int WebFB::sockPoll() {
 
 	//*	Initialize the Poll (pollfd) structure
     std::memset(&fds, 0, sizeof(fds));
-	//bzero(&fds, sizeof(fds));
+	//// bzero(&fds, sizeof(fds));
 
 	fds[0].fd = this->sockFD;
 	fds[0].events = POLLIN;
@@ -218,8 +211,6 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 	SEQFINDINFO      sfinfo;
 	UINT16           seqtype;
 	LPUINT16         pRec;
-
-	LPSEQRECORD717SF pRec717;
 	LPSEQRECORD429   pRec429;
 
 	std::stringstream ss;
@@ -255,9 +246,9 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 					//! Check if lat or lon
 					laloStr = hexStr.substr(hexStr.length()-2);
 					if(laloStr == LAT) {
-						LatLon = (LaLo)0;
+						LatLon = LaLo::LATITUDE;
 					} else if (laloStr == LON) {
-						LatLon = (LaLo)1;
+						LatLon = LaLo::LONGITUDE;
 					} else {
 						valid = false;
 					}
@@ -265,20 +256,21 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 					if (valid) {
 						printf("%sHEX: 0x%s %s\n", C, hexStr.c_str(), RST);
 
-						//! Convert hex to 32-bit word
-						for (auto& i : hexStr) { w32 += hexMap[i]; }
+						//* Convert hex to 32-bit word
+                        w32 = htob(hexStr);
+						//! for (auto& i : hexStr) { w32 += hexMap.at(i); }
 						printf("%s32-BIT WORD: %s %s\n", C, w32.c_str(), RST);
 
-						//! grab bits 14-28
+						//* grab bits 14-28
 						bit1428Str = w32.substr(4, 20); 
 						printf("%sBITS 14-28: %s %s\n", C, bit1428Str.c_str(), RST);
 
-						//! Convert 14-28 to decimal & multiply
-						dec = std::stol(bit1428Str.c_str(), nullptr, 2)*0.00017166154;
+						//* Convert 14-28 to decimal & multiply
+                        dec = btoc(bit1428Str)*0.00017166154;  
+						//!dec = std::stol(bit1428Str.c_str(), nullptr, 2)*0.00017166154;
 						printf("%sBITS 14-28 [DECIMAL]: %.6f %s \n", C, dec, RST);
 
-						//! Check for Parity
-						//? Change based on order
+						//* Check for Parity
 						par29 = (Parity)(w32.at(3) - '0'); //* ASCII magic
 						par32 = (Parity)(w32.at(0) - '0');
 
@@ -289,5 +281,6 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 
 	return 0;
 }
+
 
 #endif

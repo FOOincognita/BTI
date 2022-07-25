@@ -104,7 +104,7 @@ ERRVAL BTIUTIL_SeqFindCheckValidType(UINT16 seqtype) {
 	return(ERR_SEQTYPE);
 }
 
-ERRVAL BTIUTIL_SeqFindNext(LPUINT16 *pRecord,LPUINT16 seqtype,LPSEQFINDINFO sfinfo) {
+ERRVAL BTIUTIL_SeqFindNext(LPUINT16 *pRecord, LPUINT16 seqtype, LPSEQFINDINFO sfinfo) {
 	ERRVAL errval;
 	LPUINT16 pSeqBuf;
 

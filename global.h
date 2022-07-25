@@ -36,22 +36,60 @@
 #include <cstring>
 
 //*	Definitions
+//? WebFB Default Values
 #define SOCK_IP	    "172.31.1.1"
 #define SOCK_PORT   10001
 #define MAXPKT      16384
 #define MAX_WPS     8192
 #define TIMEOUT		5
 
+//? Console Text Color
 #define C           "\033[1;36m"	// Cyan
 #define R           "\033[1;31m" 	// Red
 #define G           "\033[1;32m" 	// Green
 #define M           "\033[1;35m"	// Magenta 
 #define RST         "\033[0m" 	    // Reset
 
-//* Structures and Enumerations
+//? Status Print Macros
+#define STAT(x) std::cout << std::endl << M << "[STATUS]: " << x << RST << std::endl
+#define FAIL(x) std::cout << std::endl << R << "[ERROR]: " << x << RST << std::endl; exit(1) 
+#define PASS(x) std::cout << std::endl << G << "[SUCCESS]: " << x << RST << std::endl   
+
+//* Constants, Typedefs, Structures, & Enumerations
+enum class LaLo {LATITUDE, LONGITUDE};
+enum class Parity {POS, NEG};
+
+// Hex to Bin Lookup
+const std::unordered_map<char,std::string> hexMap = {
+    {'0',"0000"},
+    {'1',"0001"},
+    {'2',"0010"},
+    {'3',"0011"},
+    {'4',"0100"},
+    {'5',"0101"},
+    {'6',"0110"},
+    {'7',"0111"},
+    {'8',"1000"},
+    {'9',"1001"},
+    {'a',"1010"},
+    {'b',"1011"},
+    {'c',"1100"},
+    {'d',"1101"},
+    {'e',"1110"},
+    {'f',"1111"},
+    {'A',"1010"},
+    {'B',"1011"},
+    {'C',"1100"},
+    {'D',"1101"},
+    {'E',"1110"},
+    {'F',"1111"},
+};
+
+typedef std::string ipaddr_t;
+
 typedef struct manage_t {
-    struct termios  oldattr;
-    uint16_t        buf[MAXPKT];
+    struct termios  oldattr;        // Console control (init & restore)
+    uint16_t        buf[MAXPKT];    // Data Buffer
 } manage_t;
 
 typedef struct datafile_t {
@@ -161,38 +199,9 @@ void restore_console(struct termios oldattr) {
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
 }
 
-//! Data Translation
-enum class LaLo {LATITUDE, LONGITUDE};
-enum class Parity {POS, NEG};
-
-// Hex to Bin Lookup
-std::unordered_map<char,std::string> hexMap = {
-    {'0',"0000"},
-    {'1',"0001"},
-    {'2',"0010"},
-    {'3',"0011"},
-    {'4',"0100"},
-    {'5',"0101"},
-    {'6',"0110"},
-    {'7',"0111"},
-    {'8',"1000"},
-    {'9',"1001"},
-    {'a',"1010"},
-    {'b',"1011"},
-    {'c',"1100"},
-    {'d',"1101"},
-    {'e',"1110"},
-    {'f',"1111"},
-    {'A',"1010"},
-    {'B',"1011"},
-    {'C',"1100"},
-    {'D',"1101"},
-    {'E',"1110"},
-    {'F',"1111"},
-};
-
+//! Conversion functions
 /// Converts hex to decimal
-int hexDec(std::string h) {
+int htod(std::string h) {
     int x(0);   
     std::stringstream ss;
     ss << std::hex << h;
@@ -200,11 +209,18 @@ int hexDec(std::string h) {
     return x;
 }
 
-int binaryToDecimal(std::string s) {
+// Converts binary to decimal
+int btoc(std::string s) {
     std::bitset<32> bits(s);
-    // int number = bits.to_ulong();
-    return bits.to_ulong(); //number;
+    int number = bits.to_ulong();
+    return number;
 }
 
+// Converts hex to binary
+std::string htob(std::string hexStr) {
+    std::string bin("");
+    for (auto& i : hexStr) {bin += hexMap.at(i);}
+    return bin;
+}
 
 #endif

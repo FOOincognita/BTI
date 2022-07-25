@@ -1,8 +1,8 @@
 #include "WebFB.h"
 
-int main(int argc, char *argv[]) {
+int Connect(std::string _IPStr=SOCK_IP, uint16_t _portNo=SOCK_PORT) {
 	int result(0);
-    WebFB* WFB(new WebFB(SOCK_IP, SOCK_PORT)); //!! ADD IP/PORT GRABBER FROM MOBILE
+    WebFB* WFB(new WebFB(_IPStr, _portNo)); //!! ADD IP/PORT GRABBER FROM MOBILE
 
 	printf("\n%s[STATUS]: ENTERING MAIN LOOP%s\n", M, RST);
 
@@ -18,4 +18,8 @@ int main(int argc, char *argv[]) {
 	restore_console(WFB->data.oldattr);
     delete WFB;
 	return 0;
+}
+
+int main() {
+
 }
