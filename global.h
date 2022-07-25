@@ -34,14 +34,15 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <cstring>
+#include <vector>
 
 //*	Definitions
 //? WebFB Default Values
-#define SOCK_IP	    "172.31.1.1"
-#define SOCK_PORT   10001
-#define MAXPKT      16384
-#define MAX_WPS     8192
-#define TIMEOUT		5
+#define DEFAULT_IP	  "172.31.1.1"
+#define DEFAULT_PORT  "10001"
+#define MAXPKT		  16384
+#define MAX_WPS    	  8192
+#define TIMEOUT		  5
 
 //? Console Text Color
 #define C           "\033[1;36m"	// Cyan
@@ -82,14 +83,52 @@ const std::unordered_map<char,std::string> hexMap = {
     {'C',"1100"},
     {'D',"1101"},
     {'E',"1110"},
-    {'F',"1111"},
+    {'F',"1111"}
 };
 
-typedef std::string ipaddr_t;
+// Hex to Bin Lookup
+const std::unordered_map<std::string,std::string> binMap = {
+    {"0000", "0"},
+    {"0001", "1"},
+    {"0010", "2"},
+    {"0011", "3"},
+    {"0100", "4"},
+    {"0101", "5"},
+    {"0110", "6"},
+    {"0111", "7"},
+    {"1000", "8"},
+    {"1001", "9"},
+    {"1010", "a"},
+    {"1011", "b"},
+    {"1100", "c"},
+    {"1101", "d"},
+    {"1110", "e"},
+    {"1111", "f"},
+    {"1010", "A"},
+    {"1011", "B"},
+    {"1100", "C"},
+    {"1101", "D"},
+    {"1110", "E"},
+    {"1111", "F"}
+};
+
+// Oct to Bin Lookup
+const std::unordered_map<char,std::string> octMap = {
+    {'0',"000"},
+    {'1',"001"},
+    {'2',"010"},
+    {'3',"011"},
+    {'4',"100"},
+    {'5',"101"},
+    {'6',"110"},
+    {'7',"111"}
+};
+
+typedef double latitude_t;
 
 typedef struct manage_t {
-    struct termios  oldattr;        // Console control (init & restore)
-    uint16_t        buf[MAXPKT];    // Data Buffer
+    struct termios  oldattr;        	 // Console control (init & restore)
+    std::uint16_t        buf[MAXPKT];    // Data Buffer
 } manage_t;
 
 typedef struct datafile_t {
@@ -210,7 +249,7 @@ int htod(std::string h) {
 }
 
 // Converts binary to decimal
-int btoc(std::string s) {
+int btod(std::string s) {
     std::bitset<32> bits(s);
     int number = bits.to_ulong();
     return number;
@@ -221,6 +260,32 @@ std::string htob(std::string hexStr) {
     std::string bin("");
     for (auto& i : hexStr) {bin += hexMap.at(i);}
     return bin;
+}
+
+// Converts oct to binary
+std::string otob(std::string octStr) {
+    std::string bin("");
+    for (auto& i : octStr) {bin += octMap.at(i);}
+    return bin;
+}
+
+// Converts Bin to Hex
+std::string btoh(std::string binStr) {
+	std::string hex("");
+	std::vector<std::string> hexVec;
+
+	while (binStr.size()%4 != 0) { binStr = "0" + binStr; }
+
+    for (int i(0); i != binStr.size(); i+=4) {
+			hex += binMap.at(binStr.substr(i, 4));
+	}
+    return hex;
+
+}
+
+// Converts string to uint16_t
+std::uint16_t stous(std::string _str) {
+	return (std::uint16_t)strtoul(_str.c_str(), NULL, 0);
 }
 
 #endif

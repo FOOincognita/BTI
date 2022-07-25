@@ -147,7 +147,7 @@ int ParsePackets(LPUINT16 buf, uint32_t wordcount)
 						printf("%sHEX: 0x%s %s\n", C, hexStr.c_str(), RST);
 
 						//! Convert hex to 32-bit word
-						for (auto& i : hexStr) { w32 += hexMap[i]; }
+						for (auto& i : hexStr) { w32 += hexMap.at(i); }
 						printf("%s32-BIT WORD: %s %s\n", C, w32.c_str(), RST);
 
 						//! grab bits 14-28

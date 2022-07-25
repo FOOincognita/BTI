@@ -1,25 +1,29 @@
 #include "WebFB.h"
 
-int Connect(std::string _IPStr=SOCK_IP, uint16_t _portNo=SOCK_PORT) {
-	int result(0);
-    WebFB* WFB(new WebFB(_IPStr, _portNo)); //!! ADD IP/PORT GRABBER FROM MOBILE
-
-	printf("\n%s[STATUS]: ENTERING MAIN LOOP%s\n", M, RST);
-
-	for(;;) {
-		if (WFB->sockPoll() == 1) { //? Data Ready
-			result = WFB->rdSockData(WFB->data.buf, MAXPKT);
-            if (result > 0) {
-				WFB->ParsePKTS(WFB->data.buf, result); 
-			}
-		}
-	}
-	printf("\n\n");
-	restore_console(WFB->data.oldattr);
-    delete WFB;
-	return 0;
+std::string GetArincData(std::string Lbl) {
+	
 }
 
-int main() {
+latitude_t GetLatData() {
 
+}
+
+int main() { //! APP MAIN WILL NEED TO USE THIS STRUCTURE
+	WebFB WFB(DEFAULT_IP, DEFAULT_PORT); //! <--- NEEDS TO BE INSTANTIATED IN APP ONLY!!
+
+	//! APP MAIN WILL NEED TO USE THIS STRUCTURE BELOW
+	bool ExampleCondition;
+	int result(0);
+	for(;;) {
+		if (WFB.sockPoll() == 1) { 
+			result = WFB.rdSockData(WFB.data.buf, MAXPKT);
+            if (result > 0) {
+				WFB.ParsePKTS(WFB.data.buf, result); 
+			}
+		}
+
+		if (ExampleCondition) break; //! Will stop read; possibly when back button is pressed?
+	}
+
+	return 0;
 }

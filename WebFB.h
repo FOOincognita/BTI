@@ -6,36 +6,38 @@
 class WebFB {
 public:
     manage_t data;
+
 private:
-    size_t		sockFD;
-    uint32_t	sockPKT;
-    uint32_t	sockError;
-    uint16_t    sockPort;
-    sigset_t    sockSigMask;
-    ipaddr_t    sockIP;
+    sigset_t    	sockSigMask;
+    std::size_t		sockFD;
+    std::string    	sockIP;
+	std::uint16_t  	sockPort;
+    std::uint32_t	sockPKT;
+    std::uint32_t	sockError;
+
 public:
     WebFB();
-    WebFB(ipaddr_t IP, uint16_t Port);
+    WebFB(std::string IP, std::string Port);
     ~WebFB();
 
     int mkSock();
     int sockConnect();
-    int rdSockData(uint16_t *pbuf, uint32_t bufsize);
+    int rdSockData(std::uint16_t *pbuf, std::uint32_t bufsize);
     int initSockPoll();
     int sockPoll();
-    int ParsePKTS(LPUINT16 buf, uint32_t wordcount);
+    int ParsePKTS(LPUINT16 buf, std::uint32_t wordcount);
 };
 
 //* Default Constructor
 WebFB::WebFB() 
-    : sockIP(SOCK_IP) , sockPort(SOCK_PORT), sockFD(-1), sockPKT(0), sockError(0) {
+    : sockIP(DEFAULT_IP) , sockPort(stous(DEFAULT_PORT)), sockFD(-1), sockPKT(0), sockError(0) {
 }
 
 //* Paramaterized Constructor
 // @param IP: IP Address
 // @param Port: IP Address Port
-WebFB::WebFB(ipaddr_t IP, uint16_t Port) 
-    : sockIP(IP) , sockPort(Port), sockFD(-1), sockPKT(0), sockError(0) {
+WebFB::WebFB(std::string IP, std::string Port) 
+    : sockIP(IP), sockPort(stous(Port)), sockFD(-1), sockPKT(0), sockError(0) {
 
     STAT("CREATING SOCKET");
 	if (!this->mkSock()) { 
@@ -63,7 +65,11 @@ WebFB::WebFB(ipaddr_t IP, uint16_t Port)
 
 //* Destructor
 //? Closes Socket
-WebFB::~WebFB() { close(this->sockFD); }
+WebFB::~WebFB() { 
+	close(this->sockFD); 
+	printf("\n\n");
+	restore_console(this->data.oldattr);
+}
 
 //* Creates Socket
 //? Returns 0 when failure
@@ -105,9 +111,9 @@ int WebFB::sockConnect() {
 //?  >0 = Data Packet
 //   @param pbuf: Data Buffer
 //   @param bufsize: Size of Buffer in Bytes
-int WebFB::rdSockData(uint16_t *pbuf, uint32_t bufsize) {
+int WebFB::rdSockData(std::uint16_t *pbuf, std::uint32_t bufsize) {
 	int result(0);
-	uint32_t wordcount(0);
+	std::uint32_t wordcount(0);
 	int j(0);
 
 	if (!pbuf) { return -1; } //? Error
@@ -266,7 +272,7 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 						printf("%sBITS 14-28: %s %s\n", C, bit1428Str.c_str(), RST);
 
 						//* Convert 14-28 to decimal & multiply
-                        dec = btoc(bit1428Str)*0.00017166154;  
+                        dec = btod(bit1428Str)*0.00017166154;  
 						//!dec = std::stol(bit1428Str.c_str(), nullptr, 2)*0.00017166154;
 						printf("%sBITS 14-28 [DECIMAL]: %.6f %s \n", C, dec, RST);
 
