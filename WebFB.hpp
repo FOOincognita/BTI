@@ -1,7 +1,7 @@
 #ifndef WEBFB_H
 #define WEBFB_H
 
-#include "global.h"
+#include "global.hpp"
 
 class WebFB {
 public:
