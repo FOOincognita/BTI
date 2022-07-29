@@ -25,7 +25,9 @@ public:
     int rdSockData(std::uint16_t *pbuf, std::uint32_t bufsize);
     int initSockPoll();
     int sockPoll();
-    int ParsePKTS(LPUINT16 buf, std::uint32_t wordcount);
+    std::string ParsePKTS(LPUINT16 buf, std::uint32_t wordcount, std::string lbl);
+	std::string GetArincData(std::string lbl);
+	latitude_t GetLatData();
 };
 
 //* Default Constructor
@@ -212,7 +214,7 @@ int WebFB::sockPoll() {
 }
 
 //	Parse data packets read from the socket
-int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
+std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) {
 	ERRVAL           errval;
 	SEQFINDINFO      sfinfo;
 	UINT16           seqtype;
@@ -220,17 +222,14 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 	LPSEQRECORD429   pRec429;
 
 	std::stringstream ss;
-	std::string hexStr(""), bit1428Str(""), laloStr(""), LAT("c8"), LON("c9"), w32("");
-	bool valid(true);
-	LaLo LatLon;
-	Parity par29, par32;
+	std::string hexStr(""), lblByteStr("");
 	double dec(0);
 
 	errval = BTICard_SeqFindInit(buf, wordcount, &sfinfo);
 
 	if (errval) {
 		syslog(LOG_ERR,"ParsePackets - SeqFindInit Failed (%i)", errval);
-		return -1;
+		return "";
 	}
 
 	//	Walk the record stream using our modified find-next method
@@ -240,7 +239,6 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 			case SEQTYPE_429:	
 				pRec429 = (LPSEQRECORD429)pRec;
 
-				w32 = "";
 				hexStr = "";
 				ss.clear();
 	
@@ -249,43 +247,49 @@ int WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount) {
 				hexStr = ss.str();
 
 				if (hexStr.size() == 8) {
-					//! Check if lat or lon
-					laloStr = hexStr.substr(hexStr.length()-2);
-					if(laloStr == LAT) {
-						LatLon = LaLo::LATITUDE;
-					} else if (laloStr == LON) {
-						LatLon = LaLo::LONGITUDE;
-					} else {
-						valid = false;
-					}
-				
-					if (valid) {
-						printf("%sHEX: 0x%s %s\n", C, hexStr.c_str(), RST);
-
-						//* Convert hex to 32-bit word
-                        w32 = htob(hexStr);
-						//! for (auto& i : hexStr) { w32 += hexMap.at(i); }
-						printf("%s32-BIT WORD: %s %s\n", C, w32.c_str(), RST);
-
-						//* grab bits 14-28
-						bit1428Str = w32.substr(4, 20); 
-						printf("%sBITS 14-28: %s %s\n", C, bit1428Str.c_str(), RST);
-
-						//* Convert 14-28 to decimal & multiply
-                        dec = btod(bit1428Str)*0.00017166154;  
-						//!dec = std::stol(bit1428Str.c_str(), nullptr, 2)*0.00017166154;
-						printf("%sBITS 14-28 [DECIMAL]: %.6f %s \n", C, dec, RST);
-
-						//* Check for Parity
-						par29 = (Parity)(w32.at(3) - '0'); //* ASCII magic
-						par32 = (Parity)(w32.at(0) - '0');
-
+					lblByteStr = hexStr.substr(hexStr.length()-2);
+					if(lblByteStr == lbl) {
+						//printf("%sHEX: 0x%s %s\n", C, hexStr.c_str(), RST);
+						return hexStr;
 					}
 				}
 		}
 	}
 
-	return 0;
+	return "";
+}
+
+// Returns raw hex given a lbl to find
+std::string WebFB::GetArincData(std::string lbl) {
+	std::string hexLbl(btoh(otob(lbl)));
+	int result(0);
+
+	for(;;) {
+		if (this->sockPoll() == 1) { 
+			result = this->rdSockData(this->data.buf, MAXPKT);
+            if (result > 0) {
+				return this->ParsePKTS(this->data.buf, result, hexLbl); 
+			}
+		}
+	}
+}
+
+// Returns double corresponding to c8, latitude values translated
+latitude_t WebFB::GetLatData() {
+	int result(0);
+	std::string rawHex(""), w32(""), bit1428Str("");
+	latitude_t decimalLatData(0);
+	for(;;) {
+		if (this->sockPoll() == 1) { 
+			result = this->rdSockData(this->data.buf, MAXPKT);
+            if (result > 0) {
+				rawHex = this->ParsePKTS(this->data.buf, result, "c8"); 
+				for (auto& i : rawHex) { w32 += hexMap.at(i); }
+				bit1428Str = w32.substr(4, 20); 
+				return std::stol(bit1428Str.c_str(), nullptr, 2)*0.00017166154;
+			}
+		}
+	}
 }
 
 
