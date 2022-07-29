@@ -29,4 +29,12 @@
   - White text is either errors bult in to the BTI-Driver, or WebFB data
   - Use ```CTRL+C``` to stop the program at any point
 
+# REQUIRED FILES FOR USE IN APP
+**EVERY SINGLE FILE LISTED NEEDS TO BE ACCESSABLE FOR WebFB.h TO BE FUNCTION!!!**
+    - BTI429.h
+    - BTICard.h
+    - libbti429.so
+    - libbtiCard.so
+    - global.h
+    - WebFB.h
   
