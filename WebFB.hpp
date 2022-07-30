@@ -83,13 +83,10 @@ int WebFB::mkSock() {
 //* Connects to WebFB
 //Returns 0 when failure
 int WebFB::sockConnect() {
-	struct sockaddr_in(addr);
+	struct sockaddr_in addr;
 	int result(0);
 
-	if (this->sockFD == -1) {
-		//! Add error handling
-		return 0;
-	}
+	if (this->sockFD == -1) { return 0; }
 
 	std::memset(&addr, 0, sizeof(addr));
     //bzero(&addr, sizeof(addr));
@@ -99,10 +96,7 @@ int WebFB::sockConnect() {
 	addr.sin_addr.s_addr = inet_addr((this->sockIP.c_str()));
 
 	result = connect(this->sockFD, (struct sockaddr*)&addr, sizeof(addr));
-	if (result < 0) {
-		//! Add error checking
-		return 0;
-	}
+	if (result < 0) { return 0; }
 
 	return 1;
 }
@@ -114,9 +108,8 @@ int WebFB::sockConnect() {
 //   @param pbuf: Data Buffer
 //   @param bufsize: Size of Buffer in Bytes
 int WebFB::rdSockData(std::uint16_t *pbuf, std::uint32_t bufsize) {
-	int result(0);
+	int result(0), j(0);
 	std::uint32_t wordcount(0);
-	int j(0);
 
 	if (!pbuf) { return -1; } //? Error
 
@@ -124,13 +117,13 @@ int WebFB::rdSockData(std::uint16_t *pbuf, std::uint32_t bufsize) {
 
 	//Socket error - disconnected?
 	if (result <= 0) {
-		syslog(LOG_ERR,"WebFB::rdSockData - Socket read failed (Socket error: %i)", errno);
+		//? syslog(LOG_ERR,"WebFB::rdSockData - Socket read failed (Socket error: %i)", errno);
 		return -1; //? Error
 	}
 
 	//Unexpected packet
 	if (result != sizeof(wordcount)) {
-		syslog(LOG_ERR,"WebFB::rdSockData - Unexpected Packet Size (bytes) exp %li, act %i", sizeof(wordcount), result);
+		//? syslog(LOG_ERR,"WebFB::rdSockData - Unexpected Packet Size (bytes) exp %li, act %i", sizeof(wordcount), result);
 		return -1; //? Error
 	}
 
@@ -142,7 +135,7 @@ int WebFB::rdSockData(std::uint16_t *pbuf, std::uint32_t bufsize) {
 
 	//? Error: Unexpected packet
 	if (wordcount > bufsize) {
-		syslog(LOG_ERR,"WebFB::rdSockData - Unexpected Packet Size (bytes) %i, exp <= %i", wordcount * 2, bufsize);
+		//? syslog(LOG_ERR,"WebFB::rdSockData - Unexpected Packet Size (bytes) %i, exp <= %i", wordcount * 2, bufsize);
 		return -1; 
 	}
 
@@ -150,13 +143,13 @@ int WebFB::rdSockData(std::uint16_t *pbuf, std::uint32_t bufsize) {
 
 	//? Error: Socket disconnected?
 	if (result <= 0) {
-		syslog(LOG_ERR,"WebFB::rdSockData - Socket read failed (Socket error: %i)", errno);
+		//? syslog(LOG_ERR,"WebFB::rdSockData - Socket read failed (Socket error: %i)", errno);
 		return -1; 
 	}
 
 	//? Error: Unexpected packet
 	if (result != (wordcount * 2)) {
-		syslog(LOG_ERR,"WebFB::rdSockData - Unexpected Packet Size (bytes) exp %i, act %i", wordcount * 2, result);
+		//? syslog(LOG_ERR,"WebFB::rdSockData - Unexpected Packet Size (bytes) exp %i, act %i", wordcount * 2, result);
 		return -1;
 	} 
 
@@ -177,17 +170,15 @@ int WebFB::initSockPoll() {
 //?   1 = Data Waiting
 //?   2 = No Data
 int WebFB::sockPoll() {
+	nfds_t nfds(0);
 	int result(0), j(0);
 	struct pollfd fds[2];
-	nfds_t nfds(0);
 	struct timespec timeout;
 
 	timeout.tv_sec = TIMEOUT;
     timeout.tv_nsec = 0;
 
-	//*	Initialize the Poll (pollfd) structure
     std::memset(&fds, 0, sizeof(fds));
-	//// bzero(&fds, sizeof(fds));
 
 	fds[0].fd = this->sockFD;
 	fds[0].events = POLLIN;
@@ -214,48 +205,36 @@ int WebFB::sockPoll() {
 }
 
 //	Parse data packets read from the socket
+//? Returns empty string on failure
 std::string WebFB::ParsePKTS(LPUINT16 buf, uint32_t wordcount, std::string lbl) {
-	ERRVAL           errval;
-	SEQFINDINFO      sfinfo;
-	UINT16           seqtype;
-	LPUINT16         pRec;
-	LPSEQRECORD429   pRec429;
-
+	UINT16            seqtype;
+	LPUINT16          pRec;
+	std::string       hexStr;
+	SEQFINDINFO       sfinfo;
+	LPSEQRECORD429    pRec429;
 	std::stringstream ss;
-	std::string hexStr(""), lblByteStr("");
-	double dec(0);
 
-	errval = BTICard_SeqFindInit(buf, wordcount, &sfinfo);
-
-	if (errval) {
-		syslog(LOG_ERR,"ParsePackets - SeqFindInit Failed (%i)", errval);
+	if (BTICard_SeqFindInit(buf, wordcount, &sfinfo)) {
+		//? syslog(LOG_ERR,"ParsePackets - SeqFindInit Failed (%i)", errval);
 		return "";
 	}
 
 	//	Walk the record stream using our modified find-next method
+	//	printf("%sHEX: 0x%s %s\n", C, hexStr.c_str(), RST);
 	while(!BTIUTIL_SeqFindNext(&pRec, &seqtype, &sfinfo)) {
-		switch(seqtype) {
-			default: break;
-			case SEQTYPE_429:	
+		if (seqtype == SEQTYPE_429) {
 				pRec429 = (LPSEQRECORD429)pRec;
-
-				hexStr = "";
+				hexStr.clear();
 				ss.clear();
 	
-				// Grab data (HEX)
 				ss << std::hex << ntohl(pRec429->data);
 				hexStr = ss.str();
 
-				if (hexStr.size() == 8) {
-					lblByteStr = hexStr.substr(hexStr.length()-2);
-					if(lblByteStr == lbl) {
-						//printf("%sHEX: 0x%s %s\n", C, hexStr.c_str(), RST);
-						return hexStr;
-					}
+				if (hexStr.size() == 8 && hexStr.substr(hexStr.length()-2) == lbl) {
+					return hexStr;
 				}
 		}
 	}
-
 	return "";
 }
 
@@ -276,15 +255,15 @@ std::string WebFB::GetArincData(std::string lbl) {
 
 // Returns double corresponding to c8, latitude values translated
 latitude_t WebFB::GetLatData() {
-	int result(0);
-	std::string rawHex(""), w32(""), bit1428Str("");
-	latitude_t decimalLatData(0);
+	int 		result(0);
+	std::string rawHex, w32, bit1428Str;
+
 	for(;;) {
 		if (this->sockPoll() == 1) { 
 			result = this->rdSockData(this->data.buf, MAXPKT);
             if (result > 0) {
-				rawHex = this->ParsePKTS(this->data.buf, result, "c8"); 
-				for (auto& i : rawHex) { w32 += hexMap.at(i); }
+				rawHex = this->ParsePKTS(this->data.buf, result, std::string("c8")); 
+				for (auto& i : rawHex) { w32 += hexMap.at(std::to_string(i)); }
 				bit1428Str = w32.substr(4, 20); 
 				return std::stol(bit1428Str.c_str(), nullptr, 2)*0.00017166154;
 			}

@@ -61,33 +61,33 @@ enum class LaLo {LATITUDE, LONGITUDE};
 enum class Parity {POS, NEG};
 
 // Hex to Bin Lookup
-const std::unordered_map<char,std::string> hexMap = {
-    {'0',"0000"},
-    {'1',"0001"},
-    {'2',"0010"},
-    {'3',"0011"},
-    {'4',"0100"},
-    {'5',"0101"},
-    {'6',"0110"},
-    {'7',"0111"},
-    {'8',"1000"},
-    {'9',"1001"},
-    {'a',"1010"},
-    {'b',"1011"},
-    {'c',"1100"},
-    {'d',"1101"},
-    {'e',"1110"},
-    {'f',"1111"},
-    {'A',"1010"},
-    {'B',"1011"},
-    {'C',"1100"},
-    {'D',"1101"},
-    {'E',"1110"},
-    {'F',"1111"}
+const std::unordered_map<std::string, std::string> hexMap = {
+    {"0","0000"},
+    {"1","0001"},
+    {"2","0010"},
+    {"3","0011"},
+    {"4","0100"},
+    {"5","0101"},
+    {"6","0110"},
+    {"7","0111"},
+    {"8","1000"},
+    {"9","1001"},
+    {"a","1010"},
+	{"A","1010"},
+    {"b","1011"},
+	{"B","1011"},
+    {"c","1100"},
+	{"C","1100"},
+    {"d","1101"},
+	{"D","1101"},
+    {"e","1110"},
+    {"E","1110"},
+    {"f","1111"},
+    {"F","1111"}
 };
 
 // Hex to Bin Lookup
-const std::unordered_map<std::string,std::string> binMap = {
+const std::unordered_map<std::string, std::string> binMap = {
     {"0000", "0"},
     {"0001", "1"},
     {"0010", "2"},
@@ -113,66 +113,67 @@ const std::unordered_map<std::string,std::string> binMap = {
 };
 
 // Oct to Bin Lookup
-const std::unordered_map<char,std::string> octMap = {
-    {'0',"000"},
-    {'1',"001"},
-    {'2',"010"},
-    {'3',"011"},
-    {'4',"100"},
-    {'5',"101"},
-    {'6',"110"},
-    {'7',"111"}
+const std::unordered_map<std::string, std::string> octMap = {
+    {"0","000"},
+    {"1","001"},
+    {"2","010"},
+    {"3","011"},
+    {"4","100"},
+    {"5","101"},
+    {"6","110"},
+    {"7","111"}
 };
 
 typedef double latitude_t;
+typedef unsigned long ulong32_t;
 
 typedef struct manage_t {
-    struct termios  oldattr;        	 // Console control (init & restore)
-    std::uint16_t        buf[MAXPKT];    // Data Buffer
+    struct termios oldattr;        // Console control (init & restore)
+    std::uint16_t  buf[MAXPKT];    // Data Buffer
 } manage_t;
 
 typedef struct datafile_t {
-	uint16_t streamactivity;		// see ACTSTREAM_ below
-	uint16_t channel;
-	uint16_t wps;
-	uint16_t updatedSubfrm;
-	uint32_t timestamp;				// last time file was updated
-	uint32_t timestamph;			// last time file was updated
-	uint16_t sfdata[4][MAX_WPS];	// allocate max.
+	std::uint16_t streamactivity;		// see ACTSTREAM_ below
+	std::uint16_t channel;
+	std::uint16_t wps;
+	std::uint16_t updatedSubfrm;
+	std::uint32_t timestamp;				// last time file was updated
+	std::uint32_t timestamph;			// last time file was updated
+	std::uint16_t sfdata[4][MAX_WPS];	// allocate max.
 } datafile_t;
 
 typedef struct chan717Info_t {
-		int        valid;
-		int        channel;
-		int        wps;
-		uint32_t   lastupdate;		// Time of last update
-		datafile_t datafile;		// Most recent SF data info
-		uint32_t   recordcnt;		// Records for this channel
-		uint32_t   errorcnt;		// Total errors for this channel
+		int        	  valid;
+		int           channel;
+		int        	  wps;
+		datafile_t 	  datafile;		// Most recent SF data info
+		std::uint32_t lastupdate;		// Time of last update
+		std::uint32_t recordcnt;		// Records for this channel
+		std::uint32_t errorcnt;		// Total errors for this channel
 } chan717Info_t;
 
 typedef struct chan429Info_t {
-	int        valid;
-	int        channel;
-	int        btx;
-	uint32_t   timestamp;			//
-	uint32_t   timestamph;			//
-	uint32_t   recordcnt;			// Records for this channel
-	uint32_t   errorcnt;			// Total errors for this channel
-	uint32_t   msg;
-	uint32_t   lastupdate;			// Time of last update
+	int        	  valid;
+	int        	  channel;
+	int       	  btx;
+	std::uint32_t timestamp;			//
+	std::uint32_t timestamph;			//
+	std::uint32_t recordcnt;			// Records for this channel
+	std::uint32_t errorcnt;			// Total errors for this channel
+	std::uint32_t msg;
+	std::uint32_t lastupdate;			// Time of last update
 } chan429Info_t;
 
 typedef struct {
-	uint16_t type;					//
-	uint16_t count;					//
-	uint32_t timestamp;				//
-	uint32_t timestamph;			//
-	uint16_t activity;				//
-	uint16_t subframe;				// Valid in all versions
-	uint16_t resv;					// (future: superframe) Valid in all versions
-	uint16_t datacount;				//
-	uint16_t data[8192];			// Variable length (don't exceed data[datacount-1])
+	std::uint16_t type;					//
+	std::uint16_t count;				//
+	std::uint32_t timestamp;			//
+	std::uint32_t timestamph;			//
+	std::uint16_t activity;				//
+	std::uint16_t subframe;				// Valid in all versions
+	std::uint16_t resv;					// (future: superframe) Valid in all versions
+	std::uint16_t datacount;			//
+	std::uint16_t data[8192];			// Variable length (don't exceed data[datacount-1])
 } SEQRECORD717SF;
 
 #define SEQTYPE_717SF 0x0009		// Sequential record type is ARINC 717 Subframe
@@ -204,7 +205,9 @@ ERRVAL BTIUTIL_SeqFindNext(LPUINT16 *pRecord,LPUINT16 seqtype,LPSEQFINDINFO sfin
 	for (pSeqBuf = sfinfo->pRecNext; pSeqBuf < sfinfo->pRecLast;) {
 		// Check for a known record type
 		errval = BTIUTIL_SeqFindCheckValidType(pSeqBuf[0]);
-		if (errval) return(errval);
+		if (errval) { 
+			return(errval); 
+		}
 
 		//Advance the pointer in the sfinfo struct
 		sfinfo->pRecNext += pSeqBuf[1];
@@ -238,7 +241,7 @@ void restore_console(struct termios oldattr) {
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldattr);
 }
 
-//! Conversion functions [GTEST STATES THESE ARE BROKEN!!!!]
+//! Conversion functions
 /// Converts hex to decimal
 int htod(std::string h) {
     int x(0);   
@@ -249,38 +252,43 @@ int htod(std::string h) {
 }
 
 // Converts binary to decimal
-int btod(std::string s) {
-    std::bitset<32> bits(s);
-    int number = bits.to_ulong();
-    return number;
+ulong32_t btod(std::string str) {
+    std::bitset<32> bits(str);
+    return bits.to_ulong();
+   
 }
 
 // Converts hex to binary
 std::string htob(std::string hexStr) {
-    std::string bin("");
-    for (auto& i : hexStr) {bin += hexMap.at(i);}
+    std::string bin;
+
+    for (auto& i : hexStr) {
+		bin += hexMap.at(std::to_string(i));
+	}
     return bin;
 }
 
 // Converts oct to binary
 std::string otob(std::string octStr) {
-    std::string bin("");
-    for (auto& i : octStr) {bin += octMap.at(i);}
+    std::string bin;
+    for (auto& i : octStr) { 
+		bin += octMap.at(std::to_string(i));
+	}
     return bin;
 }
 
 // Converts Bin to Hex
 std::string btoh(std::string binStr) {
-	std::string hex("");
-	std::vector<std::string> hexVec;
+	std::string hex;
 
-	while (binStr.size()%4 != 0) { binStr = "0" + binStr; }
+	while (binStr.size()%4 != 0) { 
+		binStr = "0" + binStr; 
+	}
 
     for (int i(0); i != binStr.size(); i+=4) {
 			hex += binMap.at(binStr.substr(i, 4));
 	}
     return hex;
-
 }
 
 // Converts string to uint16_t
